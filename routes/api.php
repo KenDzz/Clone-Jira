@@ -45,10 +45,10 @@ Route::group([
     'prefix' => 'project'
 ], function ($router) {
     Route::get('/', [ProjectController::class, 'GetProjectInfo']);
-    Route::post('add', [ProjectController::class, 'CreateProject']);
-    Route::delete('delete/{id}', [ProjectController::class, 'DeleteProjectByID']);
-    Route::get('view/{id}', [ProjectController::class, 'GetProjectInfoByID']);
-    Route::post('update', [ProjectController::class, 'UpdateProject']);
+    Route::post('/add', [ProjectController::class, 'CreateProject']);
+    Route::delete('/delete/{id}', [ProjectController::class, 'DeleteProjectByID']);
+    Route::get('/view/{id}', [ProjectController::class, 'GetProjectInfoByID']);
+    Route::post('/update', [ProjectController::class, 'UpdateProject']);
 });
 
 
@@ -56,12 +56,12 @@ Route::group([
     'middleware' => ['api'],
     'prefix' => 'task'
 ], function ($router) {
-    Route::get('/{id}', [TaskController::class, 'GetTaskInfo']);
+    Route::get('{id}', [TaskController::class, 'GetTaskInfo']);
     Route::post('add', [TaskController::class, 'CreateTask']);
     Route::get('info/{id}', [TaskController::class, 'GetTaskInfoById']);
     Route::delete('delete/{id}', [TaskController::class, 'DeleteTaskByID']);
     Route::post('update', [TaskController::class, 'UpdateTask']);
-    Route::post('/level/update', [TaskController::class, 'UpdateLevelTask']);
+    Route::post('level/update', [TaskController::class, 'UpdateLevelTask']);
 
 });
 
@@ -70,7 +70,7 @@ Route::group([
     'middleware' => ['api'],
     'prefix' => 'images'
 ], function ($router) {
-    Route::post('/upload', [ImageController::class, 'StoreImage']);
+    Route::post('upload', [ImageController::class, 'StoreImage']);
     Route::get('{fileName}', [ImageController::class, 'ShowImage'])->name('image.show');
 });
 
@@ -78,19 +78,19 @@ Route::group([
     'middleware' => ['api'],
     'prefix' => 'category'
 ], function ($router) {
-    Route::get('/', [CategoryController::class, 'GetCategoryInfo']);
+    Route::get('', [CategoryController::class, 'GetCategoryInfo']);
 });
 
 Route::group([
     'middleware' => ['api'],
     'prefix' => 'level'
 ], function ($router) {
-    Route::get('/', [LevelController::class, 'GetLevelInfo']);
+    Route::get('', [LevelController::class, 'GetLevelInfo']);
 });
 
 Route::group([
     'middleware' => ['api'],
     'prefix' => 'priority'
 ], function ($router) {
-    Route::get('/', [PriorityController::class, 'GetPriorityInfo']);
+    Route::get('', [PriorityController::class, 'GetPriorityInfo']);
 });

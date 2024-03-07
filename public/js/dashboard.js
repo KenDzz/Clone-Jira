@@ -124,7 +124,7 @@ $(document).ready(function () {
         formData.append("id", $("#id-update-project").val());
         formData.append("is_exist", $("#value-isexit-project").val());
         $.ajax({
-            url: "/api/project/update/",
+            url: "/api/project/update",
             method: "post",
             data: formData,
             contentType: false,
@@ -262,7 +262,7 @@ $(document).ready(function () {
         var formData = new FormData($(".form-new-project")[0]);
 
         $.ajax({
-            url: "/api/project/add/",
+            url: "/api/project/add",
             method: "post",
             data: formData,
             contentType: false,

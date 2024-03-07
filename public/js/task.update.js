@@ -308,7 +308,7 @@ $(document).ready(function () {
         formData.append("describes", theEditor.getData());
 
         $.ajax({
-            url: "/api/task/update/",
+            url: "/api/task/update",
             method: "post",
             data: formData,
             contentType: false,
