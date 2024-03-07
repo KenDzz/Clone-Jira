@@ -1,0 +1,802 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API CloneJira",
+        "contact": {
+            "email": "vvqua.2x@gmail.com"
+        },
+        "version": "0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000/api",
+            "description": "CloneJira"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login User",
+                "operationId": "4a0653990bae153573fca45c02b86632",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "email": "vvqua.2x@gmail.com",
+                                    "password": "123456"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register User",
+                "operationId": "3a8b52fca2b4ff82bb3c3e2384ba864e",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    },
+                                    "permission_id": {
+                                        "description": "1: Admin , 2: User",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "KenDzz",
+                                    "email": "admin@gmail.com",
+                                    "password": "123456",
+                                    "permission_id": "1"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get Info User",
+                "operationId": "fd2612503877795126d1118b634e86d8",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/user/normal": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Get User Normal",
+                "operationId": "65173fc496ce4ff44412eb7824777374",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "get": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Logout User",
+                "operationId": "b70e6a4683120a85ffe378931bfef2b5",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/category/": {
+            "get": {
+                "tags": [
+                    "category"
+                ],
+                "summary": "Get Info category",
+                "operationId": "a3d9883c7398a65ddad6fb4e1a664b2f",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/images/upload": {
+            "post": {
+                "tags": [
+                    "upload"
+                ],
+                "summary": "Upload Image",
+                "operationId": "1c734dcf8100b8188f3c4426a804524d",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "upload"
+                                ],
+                                "properties": {
+                                    "upload": {
+                                        "description": "file to upload",
+                                        "type": "file",
+                                        "format": "file"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/level/": {
+            "get": {
+                "tags": [
+                    "level"
+                ],
+                "summary": "Get Info level",
+                "operationId": "6b6449c9e99bf94f77147d815ca523b6",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/priority/": {
+            "get": {
+                "tags": [
+                    "priority"
+                ],
+                "summary": "Get Info priority",
+                "operationId": "2786440981ea85805e48c9487177cf84",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/project": {
+            "get": {
+                "tags": [
+                    "project"
+                ],
+                "summary": "Get Project Info",
+                "operationId": "bf668fec5545bfd509d692b0ad5e486d",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/project/add": {
+            "post": {
+                "tags": [
+                    "project"
+                ],
+                "summary": "Add Project",
+                "operationId": "d0424b6c68f60ad38019fa15bdf6515d",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "describes": {
+                                        "type": "string"
+                                    },
+                                    "user[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "id"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "hi KenDzz",
+                                    "describes": "hello",
+                                    "user[]": "2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/project/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "project"
+                ],
+                "summary": "Delete Project",
+                "operationId": "564f04ad283267935636ad1922ea0db4",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the project to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/project/view/{id}": {
+            "get": {
+                "tags": [
+                    "project"
+                ],
+                "summary": "View Project By ID",
+                "operationId": "e3150bcb4b9da5c5f85158cf79add3cc",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the project to view",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/project/update": {
+            "post": {
+                "tags": [
+                    "project"
+                ],
+                "summary": "Update Project",
+                "operationId": "5439efac64e1201927e2bf03021e8410",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "describes": {
+                                        "type": "string"
+                                    },
+                                    "is_exist": {
+                                        "type": "boolean"
+                                    },
+                                    "user[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "id"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "name": "hi KenDzz",
+                                    "describes": "hello",
+                                    "is_exist": 0,
+                                    "user[]": "2"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/info/{id}": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Get Task Info By ID",
+                "operationId": "05515104c881add4418445a8894fd09d",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Task",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/{id}": {
+            "get": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Get List Task Info By Project ID",
+                "operationId": "378898ea5e965eba98fddf42f2745706",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Project",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/add": {
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Create task",
+                "operationId": "e724f4c6665a93319f369993c641867c",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "project_id": {
+                                        "type": "integer"
+                                    },
+                                    "level_id": {
+                                        "type": "integer"
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "describes": {
+                                        "type": "string"
+                                    },
+                                    "priority_id": {
+                                        "type": "integer"
+                                    },
+                                    "datetimes": {
+                                        "type": "string"
+                                    },
+                                    "user[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "id"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "project_id": 1,
+                                    "level_id": 1,
+                                    "category_id": 1,
+                                    "name": "hi KenDzz",
+                                    "describes": "hi KenDzz",
+                                    "priority_id": 1,
+                                    "datetimes": "3/07/2024 04:00 PM - 3/23/2024 12:00 AM",
+                                    "user[]": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/delete/{id}": {
+            "delete": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Delete task",
+                "operationId": "56efdb95cdbea2da3851e19b5c77ac82",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the task to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/update": {
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Update task",
+                "operationId": "ff29fab0746adc0b1803dad52877008c",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "level_id": {
+                                        "type": "integer"
+                                    },
+                                    "category_id": {
+                                        "type": "integer"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "describes": {
+                                        "type": "string"
+                                    },
+                                    "priority_id": {
+                                        "type": "integer"
+                                    },
+                                    "datetimes": {
+                                        "type": "string"
+                                    },
+                                    "user[]": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "id"
+                                        },
+                                        "collectionFormat": "multi"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id": 1,
+                                    "level_id": 1,
+                                    "category_id": 1,
+                                    "name": "hi KenDzz",
+                                    "describes": "hi KenDzz",
+                                    "priority_id": 1,
+                                    "datetimes": "3/07/2024 04:00 PM - 3/23/2024 12:00 AM",
+                                    "user[]": 2
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/task/level/update": {
+            "post": {
+                "tags": [
+                    "task"
+                ],
+                "summary": "Update level task",
+                "operationId": "1f8a888ac751c156f1ff862820e90ffb",
+                "parameters": [
+                    {
+                        "name": "X-localization",
+                        "in": "header",
+                        "description": "Set language parameter (Example: 'vi' or 'en'))",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "level_id": {
+                                        "type": "integer"
+                                    },
+                                    "type": {
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object",
+                                "example": {
+                                    "id": 1,
+                                    "level_id": 1,
+                                    "type": 0
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    }
+}
