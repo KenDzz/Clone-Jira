@@ -20,7 +20,7 @@ class TaskResource extends JsonResource
             'id' => $this->id,
             'category' => $this->Category,
             'level' => $this->Level,
-            'name' => $this->name,
+            'name' => Purify::clean($this->name),
             'describes' => Purify::clean($this->describes),
             'project' => $this->Project,
             'priority' => $this->Priority,
