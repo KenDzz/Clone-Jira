@@ -19,7 +19,7 @@ class ProjectResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => Purify::clean($this->name),
+            'name' => $this->name,
             'describes' => Purify::clean($this->describes),
             'is_exist' => $this->is_exist,
             'created_at' => Carbon::parse($this->created_at)->timestamp,

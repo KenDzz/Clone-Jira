@@ -1,7 +1,7 @@
 <?php
 namespace App\Traits;
 
-use Illuminate\Http\JsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 trait JsonImageUploadResponseTrait
 {
