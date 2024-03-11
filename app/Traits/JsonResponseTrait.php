@@ -7,10 +7,10 @@ trait JsonResponseTrait
 {
     protected function result($data, $status, $success)
     {
-        return new JsonResponse(
+        return  new JsonResponse(
             [
                 'status' => $success,
-                'data' => $data,
+                'data' => $data ,
                 'code' => $status,
             ], $status
         );

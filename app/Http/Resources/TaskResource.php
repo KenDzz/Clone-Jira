@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Stevebauman\Purify\Facades\Purify;
 
 class TaskResource extends JsonResource
 {
@@ -20,7 +21,7 @@ class TaskResource extends JsonResource
             'category' => $this->Category,
             'level' => $this->Level,
             'name' => $this->name,
-            'describes' => $this->describes,
+            'describes' => Purify::clean($this->describes),
             'project' => $this->Project,
             'priority' => $this->Priority,
             'user' => UserTaskResource::collection($this->UserTask),

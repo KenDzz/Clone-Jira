@@ -79,6 +79,7 @@ class AuthController extends Controller
             'access_token' => $token,
             'token_type' => 'bearer',
             'name' => auth()->user()->name,
+            'id' => auth()->user()->id,
             'role' => auth()->user()->Permission,
             'expires_in' => auth()->factory()->getTTL() * 60
         ], Response::HTTP_OK, true);
@@ -233,5 +234,6 @@ class AuthController extends Controller
     {
         return $this->result(auth()->refresh(), Response::HTTP_OK, true);
     }
+
 
 }

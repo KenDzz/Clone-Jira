@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Events\NewTaskEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateTaskRequest;
 use App\Http\Requests\NextTaskRequest;
@@ -331,6 +332,7 @@ class TaskController extends Controller
         $resultUpdateNewUserTask  = $this->userTaskRepository->UpdateUserTask($request->id, $request['users']);
         $resultTask = $this->taskRepository->update($request['id'], $filteredDataTask);
         foreach ($resultUpdateNewUserTask as $key => $value) {
+            event(new NewTaskEvent($resultTask,$value));
             $this->emailService->sendMailNotificationJoinTask($value, __('mail.notification.join.task.desc', ['title' => $resultTask->name]));
         }
         return $this->result(new TaskResource($resultTask), Response::HTTP_OK, true);
