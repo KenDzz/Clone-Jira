@@ -10,7 +10,8 @@ use App\Traits\JsonResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Mockery;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+
 
 class AuthTest extends TestCase
 {
@@ -37,43 +38,41 @@ class AuthTest extends TestCase
             'password' => '123456',
         ];
 
-        $this->userRepository->shouldReceive('attemptLogin')
-        ->with($loginData)
-        ->once()
-        ->andReturn(true);
-
-        $response = $this->authController->login(new LoginRequest($loginData));
-
-        $this->assertInstanceOf(JsonResponse::class, $response);
+        $response = $this->withHeaders([
+            'X-LOCALIZATION' => 'vi',
+        ])->post('/api/auth/login', $loginData);
         $responseData = $response->getData(true);
+        $response->assertStatus(Response::HTTP_OK);
         $this->assertTrue($responseData['status']);
-        $this->assertArrayHasKey('access_token', $responseData['data']);
-        $this->assertEquals('bearer', $responseData['data']['token_type']);
-        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $response->assertJsonStructure([
+            'status',
+            'data' => [
+                'access_token',
+                'token_type',
+                'expires_in',
+                'name',
+                'id',
+                'role' => [
+                    'id',
+                    'name'
+                ]
+            ],
+            'code'
+        ]);
     }
 
     public function test_login_with_invalid_credentials_returns_unauthorized()
     {
-
         $loginData = [
             'email' => fake()->email,
             'password' => '123456',
         ];
 
-
-        $user = Mockery::mock(UserRepositoryInterface::class);
-        $user->shouldReceive('attemptLogin')
-            ->with($loginData)
-            ->once()
-            ->andReturn(false);
-
-        $request = new LoginRequest($loginData);
-
-        $controller = new AuthController($user);
-        $response = $controller->login($request);
-
+        $response = $this->withHeaders([
+            'X-LOCALIZATION' => 'vi',
+        ])->post('/api/auth/login', $loginData);
         $response->assertStatus(Response::HTTP_UNAUTHORIZED)
-            ->assertJson(['message' => __('auth.login.fail')]);
+            ->assertJson(['data' => __('auth.login.fail')]);
     }
 
     public function test_register_user_normal_returns_success()
