@@ -47,6 +47,9 @@ function LoadUserNormal() {
         beforeSend: function () {},
         complete: function () {},
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -75,6 +78,9 @@ function LoadCategory() {
         beforeSend: function () {},
         complete: function () {},
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -103,6 +109,9 @@ function LoadLevel() {
         beforeSend: function () {},
         complete: function () {},
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -131,6 +140,9 @@ function LoadPriority() {
         beforeSend: function () {},
         complete: function () {},
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -168,6 +180,9 @@ function getDataTask() {
             Notiflix.Block.remove(".dashboard");
         },
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -238,6 +253,9 @@ function UpdateLevelTask(type) {
             }
         },
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             var resultString = "";
             for (var key in errors["message"]) {
@@ -288,6 +306,9 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
+                if(data.status == 401){
+                    logout();
+                }
                 var errors = $.parseJSON(data.responseText);
                 var resultString = "";
                 for (var key in errors["message"]) {
@@ -332,6 +353,9 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
+                if(data.status == 401){
+                    logout();
+                }
                 var errors = $.parseJSON(data.responseText);
                 var resultString = "";
                 for (var key in errors["message"]) {

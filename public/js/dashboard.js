@@ -33,6 +33,9 @@ function LoadUserNormal() {
         beforeSend: function () {},
         complete: function () {},
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -69,6 +72,9 @@ function LoadListProject() {
             Notiflix.Block.remove(".dashboard");
         },
         error: function (data) {
+            if(data.status == 401){
+                logout();
+            }
             var errors = $.parseJSON(data.responseText);
             Notiflix.Notify.failure(errors["message"]);
         },
@@ -145,6 +151,9 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
+                if(data.status == 401){
+                    logout();
+                }
                 var errors = $.parseJSON(data.responseText);
                 var resultString = "";
                 for (var key in errors["message"]) {
@@ -243,6 +252,9 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
+                if(data.status == 401){
+                    logout();
+                }
                 var errors = $.parseJSON(data.responseText);
                 var resultString = "";
                 for (var key in errors["message"]) {
@@ -287,6 +299,9 @@ $(document).ready(function () {
                 }
             },
             error: function (data) {
+                if(data.status == 401){
+                    logout();
+                }
                 var errors = $.parseJSON(data.responseText);
                 var resultString = "";
                 for (var key in errors["message"]) {

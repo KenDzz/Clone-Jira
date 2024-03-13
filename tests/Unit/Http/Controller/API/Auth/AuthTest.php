@@ -5,12 +5,15 @@ namespace Tests\Unit\Http\Controller\API\Auth;
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Traits\JsonResponseTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Mockery;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
 
 class AuthTest extends TestCase
 {
@@ -20,6 +23,8 @@ class AuthTest extends TestCase
     private $authController;
 
     private $userRepository;
+
+    private $USER_ID_TEST = 2;
 
     public function setUp(): void
     {
@@ -74,6 +79,18 @@ class AuthTest extends TestCase
 
         $response->assertStatus(Response::HTTP_UNAUTHORIZED)
             ->assertJson(['message' => __('auth.login.fail')]);
+    }
+
+    public function test_logout_success()
+    {
+        $user = User::where('email', "vvqua.2x@gmail.com")->first(); //test
+        $token = JWTAuth::fromUser($user);
+        $response = $this->withHeaders([
+            'X-LOCALIZATION' => 'vi',
+            'Authorization' => 'Bearer '.  $token ,
+        ])->post('/api/auth/logout');
+        $response->assertStatus(Response::HTTP_OK)
+            ->assertJson(['data' => __('auth.logout.success')]);
     }
 
     public function test_register_user_normal_returns_success()

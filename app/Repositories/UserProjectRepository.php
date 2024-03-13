@@ -61,4 +61,8 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
         return $this->model->where('project_id', $projectId)->where('user_id', $userId)->first();
     }
 
+    public function GetListProjectByUser($userId){
+        return $this->model->where('user_id', $userId)->pluck('project_id')->toArray();
+    }
+
 }

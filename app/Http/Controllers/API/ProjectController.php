@@ -62,7 +62,12 @@ class ProjectController extends Controller
      */
     public function GetProjectInfo()
     {
-        return $this->result(ProjectResource::collection($this->projectRepository->getAll()), Response::HTTP_OK, true);
+        if(auth()->user()->permission_id == config("app.ROLE_ADMIN")){
+            return $this->result(ProjectResource::collection($this->projectRepository->getAll()), Response::HTTP_OK, true);
+        }else{
+            $listProject = $this->userProjectRepository->GetListProjectByUser(auth()->user()->id);
+            return $this->result($this->projectRepository->GetALLMultiProject($listProject), Response::HTTP_OK, true);
+        }
     }
 
     /**

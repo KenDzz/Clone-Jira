@@ -3,34 +3,34 @@ Notiflix.Notify.init({
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    checkAuth();
+    // checkAuth();
     if (!localStorage.getItem('token')) {
         window.location.href = '/';
     }
 });
 
-function checkAuth() {
-    $.ajax({
-        url: "/api/auth/me",
-        method: "get",
-        dataType: "json",
-        headers: {
-            "X-LOCALIZATION": $('html')[0].lang,
-            "Authorization": "Bearer " + localStorage.getItem('token'),
-        },
-        beforeSend: function(xhr) {
-        },
-        complete: function () {},
-        error: function (data) {
-            if(data.status == 401){
-                logout();
-            }
-        },
-    })
-        .done(function (data) {
-        })
-        .fail(function (jqXHR, ajaxOptions, thrownError) {});
-}
+// function checkAuth() {
+//     $.ajax({
+//         url: "/api/auth/me",
+//         method: "get",
+//         dataType: "json",
+//         headers: {
+//             "X-LOCALIZATION": $('html')[0].lang,
+//             "Authorization": "Bearer " + localStorage.getItem('token'),
+//         },
+//         beforeSend: function(xhr) {
+//         },
+//         complete: function () {},
+//         error: function (data) {
+//             if(data.status == 401){
+//                 logout();
+//             }
+//         },
+//     })
+//         .done(function (data) {
+//         })
+//         .fail(function (jqXHR, ajaxOptions, thrownError) {});
+// }
 
 function logout() {
     window.localStorage.removeItem('token');
