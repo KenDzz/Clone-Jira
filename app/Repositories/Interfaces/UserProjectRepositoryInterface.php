@@ -8,4 +8,6 @@ interface UserProjectRepositoryInterface  extends BaseRepositoryInterface
 
     public function UpdateUserProject($id, $data);
     public function checkUserExitsInProject($userId, $projectId);
+
+    public function GetListProjectByUser($userId);
 }
