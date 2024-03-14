@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::table('comments', function (Blueprint $table) {
             $table->enum("type" ,[CommentType::Project, CommentType::Task]);
-
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 
@@ -29,6 +29,7 @@ return new class extends Migration
     {
         Schema::table('comments', function (Blueprint $table) {
             $table->dropColumn("type");
+            $table->dropColumn("user_id");
 
         });
     }

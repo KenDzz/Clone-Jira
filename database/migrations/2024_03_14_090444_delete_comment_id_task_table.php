@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->string("comment_id" )->unique()->nullable();
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->dropColumn("comment_id" );
         });
     }
 
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('comment_id');
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->string("comment_id" )->unique()->nullable();;
         });
     }
 };

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->string("comment_id" )->unique()->nullable();;
+            $table->string("comment_id" )->unique()->nullable();
         });
     }
 
