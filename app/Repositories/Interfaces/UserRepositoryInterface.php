@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces;
 
 interface UserRepositoryInterface  extends BaseRepositoryInterface
 {
-    public function CreateUser($dataUser);
+    public function createUser($dataUser);
 
-    public function GetUserNormal();
+    public function getUserNormal();
 }

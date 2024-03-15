@@ -4,6 +4,6 @@ namespace App\Repositories\Interfaces;
 
 interface ProjectRepositoryInterface extends BaseRepositoryInterface
 {
-    public function CreateProject($dataProject);
-    public function GetALLMultiProject($dataProject);
+    public function createProject($dataProject);
+    public function getALLMultiProject($dataProject);
 }

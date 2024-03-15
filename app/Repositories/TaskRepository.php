@@ -14,7 +14,7 @@ class TaskRepository extends BaseRepository implements TaskRepositoryInterface
     }
 
 
-    public function GetAllTask($id){
+    public function getAllTask($id){
         return $this->model->where("project_id", $id)->get();
     }
 

@@ -129,7 +129,7 @@ class TaskController extends Controller
         if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
             return $this->respondUnauthorized(__("project.get.auth.exits"));
         }
-        return $this->result(TaskResource::collection($this->taskRepository->GetAllTask($id)), true);
+        return $this->result(TaskResource::collection($this->taskRepository->getAllTask($id)), true);
     }
 
 
@@ -212,7 +212,7 @@ class TaskController extends Controller
         $filteredDataTask['start_time'] = Carbon::parse($dataFormatDate[0]);
         $filteredDataTask['estimate_time'] = Carbon::parse($dataFormatDate[1]);
         $resultCreate = $this->taskRepository->create($filteredDataTask);
-        $resultCreateUserProject = $this->userTaskRepository->CreateUserTask($resultCreate->id, $request['users']);
+        $resultCreateUserProject = $this->userTaskRepository->createUserTask($resultCreate->id, $request['users']);
         foreach ($resultCreateUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinTask($value, __('mail.notification.join.task.desc', ['title' => $resultCreate->name]));
         }
@@ -337,7 +337,7 @@ class TaskController extends Controller
         $dataFormatDate = explode('-', $request->datetimes);
         $filteredDataTask['start_time'] = Carbon::parse($dataFormatDate[0]);
         $filteredDataTask['estimate_time'] = Carbon::parse($dataFormatDate[1]);
-        $resultUpdateNewUserTask  = $this->userTaskRepository->UpdateUserTask($id, $request['users']);
+        $resultUpdateNewUserTask  = $this->userTaskRepository->updateUserTask($id, $request['users']);
         $resultTask = $this->taskRepository->update($id, $filteredDataTask);
         foreach ($resultUpdateNewUserTask as $key => $value) {
             event(new NewTaskEvent($resultTask,$value));

@@ -133,7 +133,7 @@ class AuthController extends Controller
      * )
      */
     public function register(RegisterRequest $request) {
-        $resultCreateUser = $this->userRepository->CreateUser($request->all());
+        $resultCreateUser = $this->userRepository->createUser($request->all());
         return $this->result($resultCreateUser, true);
     }
 
@@ -190,7 +190,7 @@ class AuthController extends Controller
      */
     public function GetUserNormal()
     {
-        return $this->result($this->userRepository->GetUserNormal(), true);
+        return $this->result($this->userRepository->getUserNormal(), true);
     }
 
     /**

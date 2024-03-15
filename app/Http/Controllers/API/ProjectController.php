@@ -67,8 +67,8 @@ class ProjectController extends Controller
         if($this->checkAdmin->is((int)auth()->user()->permission)){
             return $this->result(ProjectResource::collection($this->projectRepository->getAll()), true);
         }else{
-            $listProject = $this->userProjectRepository->GetListProjectByUser(auth()->user()->id);
-            return $this->result($this->projectRepository->GetALLMultiProject($listProject), true);
+            $listProject = $this->userProjectRepository->getListProjectByUser(auth()->user()->id);
+            return $this->result($this->projectRepository->getALLMultiProject($listProject), true);
         }
     }
 
@@ -124,8 +124,8 @@ class ProjectController extends Controller
         ]);
 
 
-        $resultCreateProject = $this->projectRepository->CreateProject($filteredDataProject);
-        $resultCreateUserProject = $this->userProjectRepository->CreateUserProject($resultCreateProject->id, $request['users']);
+        $resultCreateProject = $this->projectRepository->createProject($filteredDataProject);
+        $resultCreateUserProject = $this->userProjectRepository->createUserProject($resultCreateProject->id, $request['users']);
         foreach ($resultCreateUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinProject($value, __('mail.notification.join.desc', ['title' => $resultCreateProject->name]));
         }
@@ -167,7 +167,7 @@ class ProjectController extends Controller
         if (!is_numeric($id)) {
             return $this->respondNotTheRightParameters( __("project.delete.id.numeric"));
         }
-        if(!$this->userProjectRepository->DeleteListByProjectId($id) || !$this->projectRepository->delete($id)){
+        if(!$this->userProjectRepository->deleteListByProjectId($id) || !$this->projectRepository->delete($id)){
             return $this->respondInvalidQuery(__("project.delete.id.fail"));
         }
         return $this->respondObjectDeleted($id);
@@ -273,7 +273,7 @@ class ProjectController extends Controller
         if(!$resultUpdate){
             return $this->respondInvalidQuery(__("project.update.fail"));
         }
-        $resultUpdateNewUserProject  = $this->userProjectRepository->UpdateUserProject($id, $request['users']);
+        $resultUpdateNewUserProject  = $this->userProjectRepository->updateUserProject($id, $request['users']);
         $projectDetail = $this->projectRepository->find($id);
         foreach ($resultUpdateNewUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinProject($value, __('mail.notification.join.desc', ['title' => $projectDetail->name]));
