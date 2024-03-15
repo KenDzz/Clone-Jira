@@ -4,7 +4,7 @@ namespace App\Repositories\Interfaces;
 
 interface UserTaskRepositoryInterface extends BaseRepositoryInterface
 {
-    public function CreateUserTask($id, $data);
+    public function createUserTask($id, $data);
 
-    public function UpdateUserTask($id,$data);
+    public function updateUserTask($id,$data);
 }

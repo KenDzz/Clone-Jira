@@ -13,12 +13,12 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     }
 
 
-    public function GetALLMultiProject($dataProject){
+    public function getALLMultiProject($dataProject){
         return $this->model->whereIn('id', $dataProject)->get();
     }
 
 
-    public function CreateProject($dataProject) {
+    public function createProject($dataProject) {
         return $this->model->create($dataProject);
     }
 

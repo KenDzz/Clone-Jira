@@ -17,7 +17,7 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
     }
 
 
-    public function CreateUserProject($id, $data) {
+    public function createUserProject($id, $data) {
         $resultData = [];
         foreach ($data as $key => $value) {
             $data = [
@@ -34,7 +34,7 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
 
     }
 
-    public function UpdateUserProject($id, $data) {
+    public function updateUserProject($id, $data) {
         $dataListUserOld = $this->model->where('project_id', $id)->pluck('user_id')->toArray();
 
         $arrayDiffSql = array_diff($dataListUserOld ?? [],$data ?? []);
@@ -61,11 +61,11 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
         return $this->model->where('project_id', $projectId)->where('user_id', $userId)->first();
     }
 
-    public function GetListProjectByUser($userId){
+    public function getListProjectByUser($userId){
         return $this->model->where('user_id', $userId)->pluck('project_id')->toArray();
     }
 
-    public function DeleteListByProjectId($projectId){
+    public function deleteListByProjectId($projectId){
         return $this->model->where('project_id', $projectId)->delete();
     }
 

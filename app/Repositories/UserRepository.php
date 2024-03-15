@@ -18,12 +18,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
 
-    public function CreateUser($dataUser){
+    public function createUser($dataUser){
         $dataUser['password'] = Hash::make($dataUser['password']);
         return $this->model->create($dataUser);
     }
 
-    public function GetUserNormal(){
+    public function getUserNormal(){
         return $this->model->where('permission','!=', (string)UserType::Administrator)->get();
     }
 }

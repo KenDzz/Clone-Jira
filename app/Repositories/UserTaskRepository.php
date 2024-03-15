@@ -17,7 +17,7 @@ class UserTaskRepository extends BaseRepository implements UserTaskRepositoryInt
         return UserTask::class;
     }
 
-    public function CreateUserTask($id, $data){
+    public function createUserTask($id, $data){
         $resultData = [];
         foreach ($data as $key => $value) {
             $data = [
@@ -33,7 +33,7 @@ class UserTaskRepository extends BaseRepository implements UserTaskRepositoryInt
         return $resultData;
     }
 
-    public function UpdateUserTask($id,$data){
+    public function updateUserTask($id,$data){
         $dataListUserOld = $this->model->where('task_id', $id)->pluck('user_id')->toArray();
 
         $arrayDiffSql = array_diff($dataListUserOld ?? [],$data ?? []);
