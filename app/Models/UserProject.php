@@ -16,12 +16,12 @@ class UserProject extends Model
         'user_id'
     ];
 
-    public function Project()
+    public function project()
     {
         return $this->belongsTo(Project::class, 'project_id');
     }
 
-    public function User()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

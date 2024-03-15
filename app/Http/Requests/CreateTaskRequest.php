@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\JsonErrorResponseTrait;
+use App\Enums\PriorityType;
+use App\Traits\JsonResponseTrait;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
@@ -11,7 +13,7 @@ use Illuminate\Contracts\Validation\Validator;
 
 class CreateTaskRequest extends FormRequest
 {
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
 
     private $NEEDS_AUTHORIZATION = true;
@@ -34,13 +36,13 @@ class CreateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_id' => ['required', 'numeric'],
-            'level_id' => ['required', 'numeric'],
+            'category_id' => ['required', 'numeric' , 'exists:App\Models\Category,id'],
+            'level_id' => ['required', 'numeric' , 'exists:App\Models\Level,id'],
             'name' => ['required', 'string'],
             'describes' => ['required', 'string'],
-            'project_id' => ['required', 'numeric'],
-            'priority_id' => ['required', 'numeric'],
-            'users.*' => ['required', 'numeric'],
+            'project_id' => ['required', 'numeric', 'exists:App\Models\Project,id'],
+            'priority' => [new EnumValue(PriorityType::class)],
+            'users.*' => ['required', 'numeric', 'exists:App\Models\User,id'],
             'datetimes' => ['required', 'string'],
         ];
     }
@@ -53,7 +55,6 @@ class CreateTaskRequest extends FormRequest
             'name.required' => __('task.create.name.required'),
             'describes.required' => __('task.create.describes.required'),
             'project_id.required' => __('task.create.project_id.required'),
-            'priority_id.required' => __('task.create.priority_id.required'),
             'datetimes.required' => __('task.create.datetimes.required'),
 
             'category_id.numeric' => __('task.create.category_id.required'),
@@ -61,9 +62,13 @@ class CreateTaskRequest extends FormRequest
             'name.numeric' => __('task.create.name.required'),
             'describes.numeric' => __('task.create.describes.required'),
             'project_id.numeric' => __('task.create.project_id.required'),
-            'priority_id.numeric' => __('task.create.priority_id.required'),
             'users.numeric' => __('task.create.users.numeric'),
             'datetimes.numeric' => __('task.create.datetimes.numeric'),
+
+            'category_id.exists' => __('task.create.category_id.exists'),
+            'level_id.exists' => __('task.create.level_id.exists'),
+            'project_id.exists' => __('task.create.project_id.exists'),
+            'users.exists' => __('task.create.users.exists'),
 
         ];
     }
@@ -71,6 +76,6 @@ class CreateTaskRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException($this->result($errors, Response::HTTP_UNPROCESSABLE_ENTITY, false));
+        throw new HttpResponseException($this->setHTTPStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($errors));
     }
 }

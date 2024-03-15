@@ -16,12 +16,12 @@ class UserTask extends Model
         'user_id'
     ];
 
-    public function Task()
+    public function task()
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
 
-    public function User()
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Traits\JsonErrorResponseTrait;
-use App\Traits\JsonResponseTrait;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
 use Illuminate\Http\Response;
 

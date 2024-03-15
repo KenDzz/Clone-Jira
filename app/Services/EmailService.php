@@ -4,12 +4,12 @@ namespace App\Services;
 use App\Jobs\SendMailJob;
 use App\Jobs\SendMailTask;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use App\Traits\JsonErrorResponseTrait;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Response;
 
 class EmailService
 {
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
 
     private $userRepository;
@@ -22,7 +22,7 @@ class EmailService
     public function sendMailNotificationJoinProject($userId, $desc) {
         $userDetail = $this->userRepository->find($userId);
         if (!filter_var(trim($userDetail->email), FILTER_VALIDATE_EMAIL)) {
-            return $this->result(__('mail.invalid'),Response::HTTP_UNPROCESSABLE_ENTITY, false);
+            return $this->respondInvalidParameters(__('mail.invalid'));
         }
         $dataMail = new \stdClass();
         $dataMail->name = $userDetail->name;
@@ -35,7 +35,7 @@ class EmailService
     public function sendMailNotificationJoinTask($userId, $desc) {
         $userDetail = $this->userRepository->find($userId);
         if (!filter_var(trim($userDetail->email), FILTER_VALIDATE_EMAIL)) {
-            return $this->result(__('mail.invalid'),Response::HTTP_UNPROCESSABLE_ENTITY, false);
+            return $this->respondInvalidParameters(__('mail.invalid'));
         }
         $dataMail = new \stdClass();
         $dataMail->name = $userDetail->name;

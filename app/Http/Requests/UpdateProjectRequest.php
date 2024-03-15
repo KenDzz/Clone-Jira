@@ -2,17 +2,19 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\JsonErrorResponseTrait;
+use App\Enums\ProjectStatus;
+use App\Traits\JsonResponseTrait;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Response;
 
 class UpdateProjectRequest extends FormRequest
 {
 
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
 
     private $NEEDS_AUTHORIZATION = true;
@@ -35,11 +37,13 @@ class UpdateProjectRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
             'name' => ['required', 'string'],
             'describes' => ['required', 'string'],
-            'is_exist' => ['required', 'boolean'],
-            'users.*' => ['required', 'numeric'],
+            'users.*' => ['required', 'numeric', 'exists:App\Models\User,id'],
+            'status' => [new EnumValue(ProjectStatus::class)],
+
         ];
     }
 
@@ -49,15 +53,16 @@ class UpdateProjectRequest extends FormRequest
             'name.required' => __('project.update.name.required'),
             'describes.required' => __('project.update.describes.required'),
             'name.max' => __('project.update.name.max'),
-            'is_exist.required' => __('project.update.isExist.required'),
             'users.required' => __('project.register.user.required'),
             'users.numeric' => __('project.register.user.numeric'),
+            'users.exists' => __('project.register.users.exists'),
+
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException($this->result($errors, Response::HTTP_UNPROCESSABLE_ENTITY, false));
+        throw new HttpResponseException($this->setHTTPStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($errors));
     }
 }

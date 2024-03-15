@@ -154,7 +154,6 @@ return [
     |
     */
 
-    'ROLE_ADMIN' => 1,
 
     'providers' => [
 

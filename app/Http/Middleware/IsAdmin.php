@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\UserType;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -18,7 +19,7 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->permission_id != config('app.ROLE_ADMIN')) {
+        if (auth()->user()->permission != UserType::Administrator) {
             abort(Response::HTTP_UNAUTHORIZED, __('auth.fail'));
         }
         return $next($request);

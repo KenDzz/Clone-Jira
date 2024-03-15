@@ -18,7 +18,7 @@ class UserResource extends JsonResource
         return [
             'name' => $this->name,
             'email' => $this->email,
-            'permission' => $this->Permission,
+            'permission' => $this->permission,
             'created_at' => Carbon::parse($this->created_at)->timestamp,
         ];
     }

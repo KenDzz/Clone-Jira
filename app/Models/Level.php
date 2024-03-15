@@ -10,12 +10,12 @@ class Level extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'order'
     ];
 
-    public $timestamps = false;
 
-    public function Task()
+    public function tasks()
     {
         return $this->hasMany(Task::class, 'level_id');
     }

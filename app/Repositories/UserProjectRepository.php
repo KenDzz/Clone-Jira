@@ -4,12 +4,12 @@ namespace App\Repositories;
 
 use App\Models\UserProject;
 use App\Repositories\Interfaces\UserProjectRepositoryInterface;
-use App\Traits\JsonErrorResponseTrait;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Response;
 
 class UserProjectRepository extends BaseRepository  implements UserProjectRepositoryInterface
 {
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
     public function getModel()
     {
@@ -26,7 +26,7 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
             ];
             $result = $this->model->create($data);
             if(!$result){
-                $this->result(__('project.register.user.bad'), Response::HTTP_BAD_REQUEST, false);
+                $this->respondInvalidQuery(__('project.register.user.bad'));
             }
             $resultData[] = $value;
         }
@@ -49,7 +49,7 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
             ];
             $result = $this->model->create($data);
             if(!$result){
-                $this->result(__('project.register.user.bad'), Response::HTTP_BAD_REQUEST, false);
+                $this->respondInvalidQuery(__('project.register.user.bad'));
             }
             $resultData[] = $value;
         }
@@ -63,6 +63,10 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
 
     public function GetListProjectByUser($userId){
         return $this->model->where('user_id', $userId)->pluck('project_id')->toArray();
+    }
+
+    public function DeleteListByProjectId($projectId){
+        return $this->model->where('project_id', $projectId)->delete();
     }
 
 }

@@ -72,7 +72,7 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         if (!$token = auth()->attempt($request->all())) {
-            return $this->result(__('auth.login.fail'), Response::HTTP_UNAUTHORIZED, false);
+            return $this->respondUnauthorized(__('auth.login.fail'));
         }
 
         return $this->result([
@@ -80,9 +80,9 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'name' => auth()->user()->name,
             'id' => auth()->user()->id,
-            'role' => auth()->user()->Permission,
+            'role' => auth()->user()->permission,
             'expires_in' => auth()->factory()->getTTL() * 60
-        ], Response::HTTP_OK, true);
+        ],  true);
     }
 
 
@@ -116,8 +116,8 @@ class AuthController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="permission_id",
-     *                      description="1: Admin , 2: User",
+     *                     property="permission",
+     *                      description="0: Admin , 1: User",
      *                     type="int"
      *                 ),
      *                 example={"name": "KenDzz","email" : "admin@gmail.com", "password": "123456", "permission_id" : "1"}
@@ -134,7 +134,7 @@ class AuthController extends Controller
      */
     public function register(RegisterRequest $request) {
         $resultCreateUser = $this->userRepository->CreateUser($request->all());
-        return $this->result($resultCreateUser, Response::HTTP_OK, true);
+        return $this->result($resultCreateUser, true);
     }
 
     /**
@@ -164,7 +164,7 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return $this->result(New UserResource(auth()->user()), Response::HTTP_OK, true);
+        return $this->result(New UserResource(auth()->user()), true);
     }
 
 
@@ -190,7 +190,7 @@ class AuthController extends Controller
      */
     public function GetUserNormal()
     {
-        return $this->result($this->userRepository->GetUserNormal(), Response::HTTP_OK, true);
+        return $this->result($this->userRepository->GetUserNormal(), true);
     }
 
     /**
@@ -222,7 +222,7 @@ class AuthController extends Controller
     {
 
         //auth()->logout();
-        return $this->result(__('auth.logout.success'), Response::HTTP_OK, true);
+        return $this->result(__('auth.logout.success'), true);
     }
 
     /**
@@ -232,7 +232,7 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return $this->result(auth()->refresh(), Response::HTTP_OK, true);
+        return $this->result(auth()->refresh(), true);
     }
 
 

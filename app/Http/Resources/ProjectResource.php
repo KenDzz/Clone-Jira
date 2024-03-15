@@ -21,10 +21,10 @@ class ProjectResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'describes' => Purify::clean($this->describes),
-            'is_exist' => $this->is_exist,
+            'status' => $this->status,
             'created_at' => Carbon::parse($this->created_at)->timestamp,
             'updated_at' => Carbon::parse($this->updated_at)->timestamp,
-            'member' => $this->UserProject,
+            'member' => $this->userProjects,
         ];
     }
 }

@@ -62,6 +62,16 @@
                                     autocomplete="off">
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Select Status</label>
+                                <select id="select-status-new" placeholder="Select status..." autocomplete="off" name="status">
+                                    <option value="closed">Closed</option>
+                                    <option value="open">Open</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="ready">Ready</option>
+                                    <option value="on hold">On hold</option>
+                                </select>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -103,12 +113,15 @@
                                     autocomplete="off">
                                 </select>
                             </div>
-                            <div class="custom-control custom-checkbox">
-                                <label class="form-check-label">
-                                    <input type="hidden" id="value-isexit-project" value="0">
-                                    <input type="checkbox" class="form-check-input" name="is_exist"
-                                        id="isexit-update-project" value="0">Open
-                                </label>
+                            <div class="form-group">
+                                <label>Select Status</label>
+                                <select id="select-status" placeholder="Select status..." autocomplete="off" name="status">
+                                    <option value="closed">Closed</option>
+                                    <option value="open">Open</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="ready">Ready</option>
+                                    <option value="on hold">On hold</option>
+                                </select>
                             </div>
                         </form>
                     </div>

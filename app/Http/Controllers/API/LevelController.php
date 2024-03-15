@@ -23,7 +23,7 @@ class LevelController extends Controller
 
             /**
      * @OA\Get(
-     *     path="/level/",
+     *     path="/levels",
      *     tags={"level"},
      *     summary="Get Info level",
      *     @OA\Parameter(
@@ -41,7 +41,7 @@ class LevelController extends Controller
      *     )
      * )
      */
-    public function GetLevelInfo() {
-        return $this->result(LevelResource::collection($this->levelRepository->getAll()),Response::HTTP_OK, true);
+    public function index() {
+        return $this->result(LevelResource::collection($this->levelRepository->getAll()), true);
     }
 }
