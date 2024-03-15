@@ -11,6 +11,6 @@ use BenSampo\Enum\Enum;
  */
 final class CommentType extends Enum
 {
-    const Project = 0;
-    const Task = 1;
+    const Project = "projects";
+    const Task = "tasks";
 }
