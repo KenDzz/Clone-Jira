@@ -29,8 +29,8 @@ class CategoryController extends Controller
      */
             /**
      * @OA\Get(
-     *     path="/category/",
-     *     tags={"category"},
+     *     path="/categories",
+     *     tags={"categories"},
      *     summary="Get Info category",
      *     @OA\Parameter(
      *         name="X-localization",
@@ -47,7 +47,7 @@ class CategoryController extends Controller
      *     )
      * )
      */
-    public function GetCategoryInfo() {
-        return $this->result(CategoryResource::collection($this->categoryRepository->getAll()),Response::HTTP_OK, true);
+    public function index() {
+        return $this->result(CategoryResource::collection($this->categoryRepository->getAll()), true);
     }
 }

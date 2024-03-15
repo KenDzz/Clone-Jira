@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\UserType;
 use App\Events\NewTaskEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateTaskRequest;
@@ -31,6 +32,7 @@ class TaskController extends Controller
     private $MAX_LEVEL = 4;
 
     private $MIN_LEVEL = 1;
+    private $checkAdmin;
 
 
     public function __construct(TaskRepositoryInterface $taskRepositoryInterface, UserTaskRepositoryInterface $userTaskRepositoryInterface, UserProjectRepositoryInterface $userProjectRepositoryInterface, EmailService $emailService)
@@ -40,13 +42,15 @@ class TaskController extends Controller
         $this->emailService = $emailService;
         $this->userProjectRepository = $userProjectRepositoryInterface;
         $this->middleware('auth:api', ['except' => ['']]);
-        $this->middleware('isAdmin:api', ['except' => ['GetTaskInfoById', 'GetTaskInfo']]);
+        $this->middleware('isAdmin:api', ['except' => ['show', 'GetTaskInfo']]);
+        $this->checkAdmin = UserType::Administrator();
+
     }
 
 
     /**
      * @OA\Get(
-     *     path="/task/info/{id}",
+     *     path="v1/tasks/{id}",
      *     tags={"task"},
      *     summary="Get Task Info By ID",
      *     @OA\Parameter(
@@ -72,22 +76,25 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function GetTaskInfoById($id)
+    public function show($id)
     {
         if (!is_numeric($id)) {
-            return $this->result(__("task.get.id.numeric"), Response::HTTP_BAD_REQUEST, false);
+            return $this->respondInvalidParameters(__("task.get.id.numeric"));
         }
         $dataTask = $this->taskRepository->find($id);
-        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $dataTask->Project->id);
-        if (!$checkUserExistProject && auth()->user()->permission_id != config('app.ROLE_ADMIN')) {
-            return $this->result(['message' => __("project.get.auth.exits")], Response::HTTP_UNAUTHORIZED, false);
+        if(!$dataTask){
+            return $this->respondInvalidQuery(__("task.get.id.data.null"));
         }
-        return $this->result(new TaskResource($this->taskRepository->find($id)), Response::HTTP_OK, true);
+        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $dataTask->project->id);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+            return $this->respondUnauthorized( __("project.get.auth.exits"));
+        }
+        return $this->result(new TaskResource($this->taskRepository->find($id)), true);
     }
 
     /**
      * @OA\Get(
-     *     path="/task/{id}",
+     *     path="/v1/tasks/list/{id}",
      *     tags={"task"},
      *     summary="Get List Task Info By Project ID",
      *     @OA\Parameter(
@@ -115,22 +122,21 @@ class TaskController extends Controller
      */
     public function GetTaskInfo($id)
     {
-
         if (!is_numeric($id)) {
-            return $this->result(__("task.get.id.numeric"), Response::HTTP_BAD_REQUEST, false);
+            return $this->respondInvalidParameters(__("task.get.id.numeric"));
         }
         $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $id);
-        if (!$checkUserExistProject && auth()->user()->permission_id != config('app.ROLE_ADMIN')) {
-            return $this->result(['message' => __("project.get.auth.exits")], Response::HTTP_UNAUTHORIZED, false);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+            return $this->respondUnauthorized(__("project.get.auth.exits"));
         }
-        return $this->result(TaskResource::collection($this->taskRepository->GetAllTask($id)), Response::HTTP_OK, true);
+        return $this->result(TaskResource::collection($this->taskRepository->GetAllTask($id)), true);
     }
 
 
 
     /**
      * @OA\Post(
-     *     path="/task/add",
+     *     path="/v1/tasks",
      *     tags={"task"},
      *     summary="Create task",
      *     @OA\Parameter(
@@ -166,8 +172,8 @@ class TaskController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="priority_id",
-     *                     type="integer"
+     *                     property="priority",
+     *                     type="string"
      *                 ),
      *                 @OA\Property(
      *                     property="datetimes",
@@ -191,7 +197,7 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function CreateTask(CreateTaskRequest $request)
+    public function store(CreateTaskRequest $request)
     {
         $filteredDataTask = $request->only([
             'category_id',
@@ -199,7 +205,7 @@ class TaskController extends Controller
             "name",
             "describes",
             "project_id",
-            "priority_id",
+            "priority",
         ]);
 
         $dataFormatDate = explode('-', $request->datetimes);
@@ -210,14 +216,13 @@ class TaskController extends Controller
         foreach ($resultCreateUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinTask($value, __('mail.notification.join.task.desc', ['title' => $resultCreate->name]));
         }
-
-        return $this->result($resultCreate, Response::HTTP_OK, true);
+        return $this->result(new TaskResource($resultCreate), true);
     }
 
 
         /**
      * @OA\delete(
-     *     path="/task/delete/{id}",
+     *     path="/v1/tasks/{id}",
      *     tags={"task"},
      *     summary="Delete task",
      *     @OA\Parameter(
@@ -244,19 +249,22 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function DeleteTaskByID($id)
+    public function destroy($id)
     {
 
         if (!is_numeric($id)) {
-            return $this->result(['message' => __("task.delete.id.numeric")], Response::HTTP_BAD_REQUEST, false);
+            return $this->respondInvalidParameters(__("task.delete.id.numeric"));
         }
-        return $this->result($this->taskRepository->delete($id), Response::HTTP_OK, true);
+        if($this->taskRepository->delete($id)){
+            return $this->respondInvalidQuery(__("project.delete.id.fail"));
+        }
+        return $this->respondObjectDeleted($id);
     }
 
 
     /**
      * @OA\Post(
-     *     path="/task/update",
+     *     path="/v1/tasks/{id}",
      *     tags={"task"},
      *     summary="Update task",
      *     @OA\Parameter(
@@ -292,8 +300,8 @@ class TaskController extends Controller
      *                     type="string"
      *                 ),
      *                 @OA\Property(
-     *                     property="priority_id",
-     *                     type="integer"
+     *                     property="priority",
+     *                     type="string"
      *                 ),
      *                 @OA\Property(
      *                     property="datetimes",
@@ -305,7 +313,7 @@ class TaskController extends Controller
      *                     collectionFormat="multi",
      *                     @OA\Items(type="string", format="id"),
      *                 ),
-     *                 example={"id": 1,"level_id" : 1, "category_id": 1, "name": "hi KenDzz", "describes": "hi KenDzz", "priority_id" : 1, "datetimes" : "3/07/2024 04:00 PM - 3/23/2024 12:00 AM", "user[]": 2}
+     *                 example={"id": 1,"level_id" : 1, "category_id": 1, "name": "hi KenDzz", "describes": "hi KenDzz", "priority" : "Low", "datetimes" : "3/07/2024 04:00 PM - 3/23/2024 12:00 AM", "user[]": 2}
      *             ),
      *
      *         )
@@ -317,25 +325,25 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function UpdateTask(UpdateTaskRequest $request)
+    public function update(UpdateTaskRequest $request, int $id)
     {
         $filteredDataTask = $request->only([
             'category_id',
             'level_id',
             "name",
             "describes",
-            "priority_id",
+            "priority",
         ]);
         $dataFormatDate = explode('-', $request->datetimes);
         $filteredDataTask['start_time'] = Carbon::parse($dataFormatDate[0]);
         $filteredDataTask['estimate_time'] = Carbon::parse($dataFormatDate[1]);
-        $resultUpdateNewUserTask  = $this->userTaskRepository->UpdateUserTask($request->id, $request['users']);
-        $resultTask = $this->taskRepository->update($request['id'], $filteredDataTask);
+        $resultUpdateNewUserTask  = $this->userTaskRepository->UpdateUserTask($id, $request['users']);
+        $resultTask = $this->taskRepository->update($id, $filteredDataTask);
         foreach ($resultUpdateNewUserTask as $key => $value) {
             event(new NewTaskEvent($resultTask,$value));
             $this->emailService->sendMailNotificationJoinTask($value, __('mail.notification.join.task.desc', ['title' => $resultTask->name]));
         }
-        return $this->result(new TaskResource($resultTask), Response::HTTP_OK, true);
+        return $this->result(new TaskResource($resultTask), true);
     }
 
 
@@ -382,23 +390,23 @@ class TaskController extends Controller
      *     )
      * )
      */
-    public function UpdateLevelTask(NextTaskRequest $request)
-    {
-        $filteredDataTask = $request->only([
-            'level_id',
-        ]);
+    // public function UpdateLevelTask(NextTaskRequest $request)
+    // {
+    //     $filteredDataTask = $request->only([
+    //         'level_id',
+    //     ]);
 
-        if ($filteredDataTask['level_id'] >= $this->MAX_LEVEL && $request['type']) {
-            return $this->result(['message' => __("task.update.level.max")], Response::HTTP_OK, false);
-        } else if ($filteredDataTask['level_id'] <= $this->MIN_LEVEL && !$request['type']) {
-            return $this->result(['message' => __("task.update.level.min")], Response::HTTP_OK, false);
-        }
+    //     if ($filteredDataTask['level_id'] >= $this->MAX_LEVEL && $request['type']) {
+    //         return $this->result(['message' => __("task.update.level.max")], Response::HTTP_OK, false);
+    //     } else if ($filteredDataTask['level_id'] <= $this->MIN_LEVEL && !$request['type']) {
+    //         return $this->result(['message' => __("task.update.level.min")], Response::HTTP_OK, false);
+    //     }
 
-        if ($request['type']) {
-            $filteredDataTask['level_id'] += 1;
-        } else {
-            $filteredDataTask['level_id'] -= 1;
-        }
-        return $this->result(new TaskResource($this->taskRepository->update($request['id'], $filteredDataTask)), Response::HTTP_OK, true);
-    }
+    //     if ($request['type']) {
+    //         $filteredDataTask['level_id'] += 1;
+    //     } else {
+    //         $filteredDataTask['level_id'] -= 1;
+    //     }
+    //     return $this->result(new TaskResource($this->taskRepository->update($request['id'], $filteredDataTask)), Response::HTTP_OK, true);
+    // }
 }

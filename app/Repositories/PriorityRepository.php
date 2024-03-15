@@ -9,6 +9,6 @@ class PriorityRepository extends BaseRepository implements PriorityRepositoryInt
 {
     public function getModel()
     {
-        return Priority::class;
+        // return Priority::class;
     }
 }

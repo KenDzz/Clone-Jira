@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\JsonErrorResponseTrait;
 use App\Traits\JsonResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -14,7 +13,7 @@ use Illuminate\Http\Response;
 
 class LoginRequest extends FormRequest
 {
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
     private $NEEDS_AUTHORIZATION = true;
 
@@ -54,7 +53,7 @@ class LoginRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException($this->result($errors, Response::HTTP_UNPROCESSABLE_ENTITY, false));
+        throw new HttpResponseException($this->setHTTPStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($errors));
     }
 
 }

@@ -12,37 +12,37 @@ use Illuminate\Http\Response;
 class PriorityController extends Controller
 {
 
-    use JsonResponseTrait;
+    // use JsonResponseTrait;
 
-    private $priorityRepositorys;
+    // private $priorityRepositorys;
 
-    public function __construct(PriorityRepositoryInterface $priorityRepositoryInterface) {
-        $this->priorityRepositorys = $priorityRepositoryInterface;
-        $this->middleware('auth:api', ['except' => []]);
+    // public function __construct(PriorityRepositoryInterface $priorityRepositoryInterface) {
+    //     $this->priorityRepositorys = $priorityRepositoryInterface;
+    //     $this->middleware('auth:api', ['except' => []]);
 
-    }
+    // }
 
-     /**
-     * @OA\Get(
-     *     path="/priority/",
-     *     tags={"priority"},
-     *     summary="Get Info priority",
-     *     @OA\Parameter(
-     *         name="X-localization",
-     *         in="header",
-     *         description="Set language parameter (Example: 'vi' or 'en'))",
-     *         @OA\Schema(
-     *             type="string"
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="OK"
-     *     )
-     * )
-     */
-    public function GetPriorityInfo() {
-        return $this->result(PriorityResource::collection($this->priorityRepositorys->getAll()),Response::HTTP_OK, true);
-    }
+    //  /**
+    //  * @OA\Get(
+    //  *     path="/priority/",
+    //  *     tags={"priority"},
+    //  *     summary="Get Info priority",
+    //  *     @OA\Parameter(
+    //  *         name="X-localization",
+    //  *         in="header",
+    //  *         description="Set language parameter (Example: 'vi' or 'en'))",
+    //  *         @OA\Schema(
+    //  *             type="string"
+    //  *         )
+    //  *     ),
+    //  *
+    //  *     @OA\Response(
+    //  *         response=200,
+    //  *         description="OK"
+    //  *     )
+    //  * )
+    //  */
+    // public function GetPriorityInfo() {
+    //     return $this->result(PriorityResource::collection($this->priorityRepositorys->getAll()),Response::HTTP_OK, true);
+    // }
 }

@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\ProjectStatus;
+use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\DeleteProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectCollection;
 use App\Http\Resources\ProjectResource;
-use App\Models\Project;
 use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use App\Repositories\Interfaces\UserProjectRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\EmailService;
-use App\Traits\JsonErrorResponseTrait;
 use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class ProjectController extends Controller
 {
@@ -30,6 +29,8 @@ class ProjectController extends Controller
 
     private $userRepository;
 
+    private $checkAdmin;
+
     public function __construct(ProjectRepositoryInterface $projectRepositoryInterface, UserProjectRepositoryInterface $userProjectRepositoryInterface, UserRepositoryInterface $userRepositoryInterface, EmailService $emailService)
     {
         $this->projectRepository = $projectRepositoryInterface;
@@ -37,12 +38,13 @@ class ProjectController extends Controller
         $this->emailService = $emailService;
         $this->userRepository = $userRepositoryInterface;
         $this->middleware('auth:api', ['except' => []]);
-        $this->middleware('isAdmin:api', ['except' => ['GetProjectInfo', 'GetProjectInfoByID']]);
+        $this->middleware('isAdmin:api', ['except' => ['index', 'show']]);
+        $this->checkAdmin = UserType::Administrator();
     }
 
     /**
      * @OA\Get(
-     *     path="/project",
+     *     path="/v1/projects",
      *     tags={"project"},
      *     summary="Get Project Info",
      *     @OA\Parameter(
@@ -60,19 +62,19 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function GetProjectInfo()
+    public function index()
     {
-        if(auth()->user()->permission_id == config("app.ROLE_ADMIN")){
-            return $this->result(ProjectResource::collection($this->projectRepository->getAll()), Response::HTTP_OK, true);
+        if($this->checkAdmin->is((int)auth()->user()->permission)){
+            return $this->result(ProjectResource::collection($this->projectRepository->getAll()), true);
         }else{
             $listProject = $this->userProjectRepository->GetListProjectByUser(auth()->user()->id);
-            return $this->result($this->projectRepository->GetALLMultiProject($listProject), Response::HTTP_OK, true);
+            return $this->result($this->projectRepository->GetALLMultiProject($listProject), true);
         }
     }
 
     /**
      * @OA\Post(
-     *     path="/project/add",
+     *     path="/v1/projects",
      *     tags={"project"},
      *     summary="Add Project",
      *     @OA\Parameter(
@@ -113,23 +115,26 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function CreateProject(CreateProjectRequest $request)
+    public function store(CreateProjectRequest $request)
     {
         $filteredDataProject = $request->only([
             'name',
-            'describes'
+            'describes',
+            'status'
         ]);
+
+
         $resultCreateProject = $this->projectRepository->CreateProject($filteredDataProject);
         $resultCreateUserProject = $this->userProjectRepository->CreateUserProject($resultCreateProject->id, $request['users']);
         foreach ($resultCreateUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinProject($value, __('mail.notification.join.desc', ['title' => $resultCreateProject->name]));
         }
-        return $this->result($resultCreateProject, Response::HTTP_OK, true);
+        return $this->result($resultCreateProject, true);
     }
 
     /**
      * @OA\delete(
-     *     path="/project/delete/{id}",
+     *     path="/api/v1/projects/{id}",
      *     tags={"project"},
      *     summary="Delete Project",
      *     @OA\Parameter(
@@ -156,18 +161,21 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function DeleteProjectByID($id)
+    public function destroy(int $id)
     {
 
         if (!is_numeric($id)) {
-            return $this->result(['message' => __("project.delete.id.numeric")], Response::HTTP_BAD_REQUEST, false);
+            return $this->respondNotTheRightParameters( __("project.delete.id.numeric"));
         }
-        return $this->result($this->projectRepository->delete($id), Response::HTTP_OK, true);
+        if(!$this->userProjectRepository->DeleteListByProjectId($id) || !$this->projectRepository->delete($id)){
+            return $this->respondInvalidQuery(__("project.delete.id.fail"));
+        }
+        return $this->respondObjectDeleted($id);
     }
 
     /**
      * @OA\get(
-     *     path="/project/view/{id}",
+     *     path="/v1/projects/{id}",
      *     tags={"project"},
      *     summary="View Project By ID",
      *     @OA\Parameter(
@@ -194,22 +202,22 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function GetProjectInfoByID($id)
+    public function show(Request $request,$id)
     {
         if (!is_numeric($id)) {
-            return $this->result(['message' => __("project.delete.id.numeric")], Response::HTTP_BAD_REQUEST, false);
+            return $this->respondNotTheRightParameters(__("project.delete.id.numeric"));
         }
         $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $id);
-        if (!$checkUserExistProject && auth()->user()->permission_id != config('app.ROLE_ADMIN')) {
-            return $this->result(['message' => __("project.get.auth.exits")], Response::HTTP_UNAUTHORIZED, false);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+            return $this->respondUnauthorized(__("project.get.auth.exits"));
         }
-        return $this->result(new ProjectResource($this->projectRepository->find($id)), Response::HTTP_OK, true);
+        return $this->result(new ProjectResource($this->projectRepository->find($id)), true);
     }
 
 
     /**
-     * @OA\Post(
-     *     path="/project/update",
+     * @OA\Patch(
+     *     path="/v1/projects/{id}",
      *     tags={"project"},
      *     summary="Update Project",
      *     @OA\Parameter(
@@ -234,8 +242,8 @@ class ProjectController extends Controller
      *                 ),
      *
      *                 @OA\Property(
-     *                     property="is_exist",
-     *                     type="boolean"
+     *                     property="stutus",
+     *                     type="string"
      *                 ),
      *                 @OA\Property(
      *                     property="user[]",
@@ -255,14 +263,21 @@ class ProjectController extends Controller
      *     )
      * )
      */
-    public function UpdateProject(UpdateProjectRequest $request)
+    public function update(UpdateProjectRequest $request, int $id)
     {
-        $filteredData = $request->only(['name', 'describes', 'is_exist']);
-        $resultUpdateNewUserProject  = $this->userProjectRepository->UpdateUserProject($request->id, $request['users']);
-        $projectDetail = $this->projectRepository->find($request->id);
+        if (!is_numeric($id)) {
+            return $this->respondNotTheRightParameters(__("project.update.id.numeric"));
+        }
+        $filteredData = $request->only(['name', 'describes', 'status']);
+        $resultUpdate = $this->projectRepository->update($id, $filteredData);
+        if(!$resultUpdate){
+            return $this->respondInvalidQuery(__("project.update.fail"));
+        }
+        $resultUpdateNewUserProject  = $this->userProjectRepository->UpdateUserProject($id, $request['users']);
+        $projectDetail = $this->projectRepository->find($id);
         foreach ($resultUpdateNewUserProject as $key => $value) {
             $this->emailService->sendMailNotificationJoinProject($value, __('mail.notification.join.desc', ['title' => $projectDetail->name]));
         }
-        return $this->result($this->projectRepository->update($request->id, $filteredData), Response::HTTP_OK, true);
+        return $this->result($resultUpdate, true);
     }
 }

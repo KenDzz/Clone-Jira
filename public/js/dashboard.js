@@ -4,7 +4,22 @@ Notiflix.Block.init({
     messageMaxLength: 19,
 });
 
+var selectStatus = new TomSelect("#select-status",{
+	create: true,
+	sortField: {
+		field: "text",
+		direction: "asc"
+	}
+});
 
+
+new TomSelect("#select-status-new",{
+	create: true,
+	sortField: {
+		field: "text",
+		direction: "asc"
+	}
+});
 
 var controlSelect = new TomSelect('#select-user',{
     create: false,
@@ -58,7 +73,7 @@ function LoadUserNormal() {
 
 function LoadListProject() {
     $.ajax({
-        url: "/api/project",
+        url: "/api/v1/projects",
         method: "get",
         dataType: "json",
         headers: {
@@ -83,11 +98,9 @@ function LoadListProject() {
             $(".list-project").html("");
             $.each(response.data, function (i, item) {
                 const date = new Date(item.created_at * 1000);
-                var checkActive = item.is_exist
-                    ? ' <span class="badge badge-pill badge-success ml-2">Open</span>'
-                    : ' <span class="badge badge-pill badge-danger">Close</span>';
+                var checkActive = '<span class="badge badge-pill badge-success ml-2">'+item.status+'</span>';
                 var listBtn = '';
-                if(localStorage.getItem("role") == 1){
+                if(localStorage.getItem("role") == 0){
                     listBtn = '<div class="col-sm-6"><a href="#" class="btn btn-primary w-100 btn-update-project">Update</a></div><div class="col-sm-6"><a href="#" class="btn btn-danger w-100 btn-delete-project">Delete</a></div>';
                 }
                 $(".list-project").append(
@@ -111,7 +124,7 @@ function LoadListProject() {
 
 $(document).ready(function () {
 
-    if(localStorage.getItem("role") == 1){
+    if(localStorage.getItem("role") == 0){
         $(".list-btn-dashboard").html('<button class="btn btn-blue" data-toggle="modal" data-target="#newProjectModal">New Project <span class="flaticon-add"></span></button>');
     }
 
@@ -127,10 +140,9 @@ $(document).ready(function () {
 
     $(document).on("click", ".btn-update-form-project", function () {
         var formData = new FormData($(".form-update-project")[0]);
-        formData.append("id", $("#id-update-project").val());
-        formData.append("is_exist", $("#value-isexit-project").val());
+        formData.append('_method', 'PATCH');
         $.ajax({
-            url: "/api/project/update",
+            url: "/api/v1/projects/"+$("#id-update-project").val(),
             method: "post",
             data: formData,
             contentType: false,
@@ -169,13 +181,13 @@ $(document).ready(function () {
     });
 
     $(document).on("click", ".btn-update-project", function () {
-        var idDeleteProject = $(this)
+        var idProject = $(this)
             .closest(".project-detail")
             .attr("attr-id");
         $("#updateProjectModal").modal("toggle");
         $(".form-update-project")[0].reset();
         $.ajax({
-            url: "/api/project/view/" + idDeleteProject,
+            url: "/api/v1/projects/" + idProject,
             method: "get",
             headers: {
                 "X-LOCALIZATION": $("html")[0].lang,
@@ -194,19 +206,12 @@ $(document).ready(function () {
                     $("#describes-update-project").html(
                         response["data"]["describes"]
                     );
-                    $("#isexit-update-project").prop(
-                        "checked",
-                        response["data"]["is_exist"] == 1 ? true : false
-                    );
-                    $("#value-isexit-project").attr(
-                        "value",
-                        response["data"]["is_exist"]
-                    );
                     controlSelectUpdate.clear();
                     $.each(response["data"]['member'], function (i, item) {
                         console.log(item.user_id);
                         controlSelectUpdate.addItem(item.user_id);
                     });
+                    selectStatus.addItem(response["data"]["status"]);
                 }
             },
             error: function (data) {
@@ -230,7 +235,7 @@ $(document).ready(function () {
             .attr("attr-id");
         console.log(idDeleteProject);
         $.ajax({
-            url: "/api/project/delete/" + idDeleteProject,
+            url: "/api/v1/projects/" + idDeleteProject,
             method: "delete",
             dataType: "json",
             headers: {
@@ -272,9 +277,8 @@ $(document).ready(function () {
     $(".btn-new-project").click(function (e) {
         e.preventDefault();
         var formData = new FormData($(".form-new-project")[0]);
-
         $.ajax({
-            url: "/api/project/add",
+            url: "/api/v1/projects",
             method: "post",
             data: formData,
             contentType: false,

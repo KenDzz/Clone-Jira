@@ -4,13 +4,13 @@ namespace App\Repositories;
 
 use App\Models\UserTask;
 use App\Repositories\Interfaces\UserTaskRepositoryInterface;
-use App\Traits\JsonErrorResponseTrait;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Http\Response;
 
 class UserTaskRepository extends BaseRepository implements UserTaskRepositoryInterface
 {
 
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
     public function getModel()
     {
@@ -26,7 +26,7 @@ class UserTaskRepository extends BaseRepository implements UserTaskRepositoryInt
             ];
             $result = $this->model->create($data);
             if(!$result){
-                $this->result(__('task.register.user.bad'), Response::HTTP_BAD_REQUEST, false);
+                $this->respondInvalidQuery(__('task.register.user.bad'));
             }
             $resultData[] = $value;
         }
@@ -48,7 +48,7 @@ class UserTaskRepository extends BaseRepository implements UserTaskRepositoryInt
             ];
             $result = $this->model->create($data);
             if(!$result){
-                $this->result(__('task.update.user.bad'), Response::HTTP_BAD_REQUEST, false);
+                $this->respondInvalidQuery(__('task.update.user.bad'));
             }
             $resultData[] = $value;
         }

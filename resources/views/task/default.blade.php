@@ -278,7 +278,10 @@ aria-hidden="true">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputEmail1">Priority</label>
-                    <select id="select-priority" name="priority_id" placeholder="Select a Priority..." autocomplete="off">
+                    <select id="select-priority" name="priority" placeholder="Select a Priority..." autocomplete="off">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
                     </select>
                 </div>
                 <div class="form-group">

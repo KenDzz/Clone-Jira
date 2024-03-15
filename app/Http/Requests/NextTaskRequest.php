@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\JsonErrorResponseTrait;
+use App\Traits\JsonResponseTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
@@ -11,7 +11,7 @@ use Illuminate\Contracts\Validation\Validator;
 
 class NextTaskRequest extends FormRequest
 {
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
 
     private $NEEDS_AUTHORIZATION = true;
@@ -54,6 +54,6 @@ class NextTaskRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException($this->result($errors, Response::HTTP_UNPROCESSABLE_ENTITY, false));
+        throw new HttpResponseException($this->setHTTPStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($errors));
     }
 }

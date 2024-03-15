@@ -22,7 +22,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
-        'permission_id'
+        'permission'
     ];
 
     /**
@@ -51,19 +51,13 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-
-    public function Permission(){
-        return $this->belongsTo(Permission::class, 'permission_id');
-    }
-
-
-    public function UserProject()
+    public function userProjects()
     {
         return $this->hasMany(UserProject::class, 'user_id');
     }
 
 
-    public function UserTask()
+    public function userTasks()
     {
         return $this->hasMany(UserTask::class, 'user_id');
     }

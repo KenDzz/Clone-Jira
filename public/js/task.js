@@ -34,6 +34,10 @@ var controlSelectPriority = new TomSelect("#select-priority", {
     searchField: "title",
 });
 
+function stripHtmlTags(html) {
+    return html.replace(/<[^>]*>/g, '');
+}
+
 function LoadUserNormal() {
     $.ajax({
         url: "/api/auth/user/normal",
@@ -64,7 +68,7 @@ function LoadUserNormal() {
 
 function LoadCategory() {
     $.ajax({
-        url: "/api/category",
+        url: "/api/v1/categories",
         method: "get",
         dataType: "json",
         headers: {
@@ -95,7 +99,7 @@ function LoadCategory() {
 
 function LoadLevel() {
     $.ajax({
-        url: "/api/level",
+        url: "/api/v1/levels",
         method: "get",
         dataType: "json",
         headers: {
@@ -124,36 +128,6 @@ function LoadLevel() {
         .fail(function (jqXHR, ajaxOptions, thrownError) {});
 }
 
-function LoadPriority() {
-    $.ajax({
-        url: "/api/priority",
-        method: "get",
-        dataType: "json",
-        headers: {
-            "X-LOCALIZATION": $("html")[0].lang,
-            Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-        beforeSend: function () {},
-        complete: function () {},
-        error: function (data) {
-            if(data.status == 401){
-                logout();
-            }
-            var errors = $.parseJSON(data.responseText);
-            Notiflix.Notify.failure(errors["message"]);
-        },
-    })
-        .done(function (response) {
-            $("#select-priority").html("");
-            $.each(response.data, function (i, item) {
-                controlSelectPriority.addOption({
-                    id: item.id,
-                    title: item.name,
-                });
-            });
-        })
-        .fail(function (jqXHR, ajaxOptions, thrownError) {});
-}
 
 function Category(type) {
     let retVal = "";
@@ -189,7 +163,8 @@ function AddBackLog(
     implementor,
     id
 ) {
-    var descShort = desc.substr(0, 10) + ".....";
+    var filter = stripHtmlTags(desc);
+    var descShort = filter.substr(0, 10) + ".....";
     $(".backlog-content").append(
         '<li class="el"><div class="task ' +
             Category(categoryType) +
@@ -224,7 +199,8 @@ function AddProgress(
     implementor,
     id
 ) {
-    var descShort = desc.substr(0, 10) + ".....";
+    var filter = stripHtmlTags(desc);
+    var descShort = filter.substr(0, 10) + ".....";
     $(".backlog-progress").append(
         '<li class="el"><div class="task ' +
             Category(categoryType) +
@@ -259,7 +235,8 @@ function AddReview(
     implementor,
     id
 ) {
-    var descShort = desc.substr(0, 10) + ".....";
+    var filter = stripHtmlTags(desc);
+    var descShort = filter.substr(0, 10) + ".....";
     $(".backlog-review").append(
         '<li class="el"><div class="task ' +
             Category(categoryType) +
@@ -294,7 +271,8 @@ function AddDone(
     implementor,
     id
 ) {
-    var descShort = desc.substr(0, 10) + ".....";
+    var filter = stripHtmlTags(desc);
+    var descShort = filter.substr(0, 10) + ".....";
     $(".backlog-done").append(
         '<li class="el"><div class="task ' +
             Category(categoryType) +
@@ -325,7 +303,7 @@ function getDataProject() {
     $(".project-id-new-task").val(lastItem);
     $(".project-id-new-task-hidden").val(lastItem);
     $.ajax({
-        url: "/api/task/" + lastItem,
+        url: "/api/v1/tasks/list/" + lastItem,
         method: "get",
         dataType: "json",
         headers: {
@@ -370,7 +348,7 @@ function getDataProject() {
                             startTime,
                             dueTime,
                             Math.round(hoursDifference),
-                            item.priority.name,
+                            item.priority,
                             strUser,
                             item.id
                         );
@@ -384,7 +362,7 @@ function getDataProject() {
                             startTime,
                             dueTime,
                             Math.round(hoursDifference),
-                            item.priority.name,
+                            item.priority,
                             strUser,
                             item.id
                         );
@@ -398,7 +376,7 @@ function getDataProject() {
                             startTime,
                             dueTime,
                             Math.round(hoursDifference),
-                            item.priority.name,
+                            item.priority,
                             strUser,
                             item.id
                         );
@@ -412,7 +390,7 @@ function getDataProject() {
                             startTime,
                             dueTime,
                             Math.round(hoursDifference),
-                            item.priority.name,
+                            item.priority,
                             strUser,
                             item.id
                         );
@@ -432,7 +410,7 @@ function getDataProject() {
 }
 
 $(document).ready(function () {
-    if(localStorage.getItem("role") == 1){
+    if(localStorage.getItem("role") == 0){
         $(".list-btn-task").html('<button class="btn btn-blue btn-new-task"  data-toggle="modal" data-target="#newTaskModal">New Task  <span class="flaticon-add"></span></button>');
     }
 
@@ -440,14 +418,13 @@ $(document).ready(function () {
     LoadUserNormal();
     LoadCategory();
     LoadLevel();
-    LoadPriority();
 
     $(".btn-save-new-task").click(function (e) {
         e.preventDefault();
         var formData = new FormData($(".form-new-task")[0]);
         formData.append("describes", theEditor.getData());
         $.ajax({
-            url: "/api/task/add",
+            url: "/api/v1/tasks",
             method: "post",
             data: formData,
             contentType: false,
@@ -544,7 +521,7 @@ var editor = CKEDITOR.ClassicEditor.create(document.querySelector("#editor"), {
         },
     },
     ckfinder: {
-        uploadUrl: "/api/images/upload",
+        uploadUrl: "/api/v1/images/upload",
     },
     // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
     heading: {
@@ -734,7 +711,7 @@ var editor = CKEDITOR.ClassicEditor.create(document.querySelector("#editor"), {
                                     const xhr = new XMLHttpRequest();
                                     xhr.open(
                                         "POST",
-                                        "/api/images/upload",
+                                        "/api/v1/images/upload",
                                         true
                                     );
                                     xhr.setRequestHeader(

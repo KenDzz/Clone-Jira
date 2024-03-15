@@ -68,7 +68,7 @@ function LoadUserNormal() {
 
 function LoadCategory() {
     $.ajax({
-        url: "/api/category",
+        url: "/api/v1/categories",
         method: "get",
         dataType: "json",
         headers: {
@@ -99,7 +99,7 @@ function LoadCategory() {
 
 function LoadLevel() {
     $.ajax({
-        url: "/api/level",
+        url: "/api/v1/levels",
         method: "get",
         dataType: "json",
         headers: {
@@ -128,36 +128,6 @@ function LoadLevel() {
         .fail(function (jqXHR, ajaxOptions, thrownError) {});
 }
 
-function LoadPriority() {
-    $.ajax({
-        url: "/api/priority",
-        method: "get",
-        dataType: "json",
-        headers: {
-            "X-LOCALIZATION": $("html")[0].lang,
-            Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-        beforeSend: function () {},
-        complete: function () {},
-        error: function (data) {
-            if(data.status == 401){
-                logout();
-            }
-            var errors = $.parseJSON(data.responseText);
-            Notiflix.Notify.failure(errors["message"]);
-        },
-    })
-        .done(function (response) {
-            $("#select-priority").html("");
-            $.each(response.data, function (i, item) {
-                controlSelectPriority.addOption({
-                    id: item.id,
-                    title: item.name,
-                });
-            });
-        })
-        .fail(function (jqXHR, ajaxOptions, thrownError) {});
-}
 
 function getDataTask() {
     var pathUrl = window.location.pathname;
@@ -166,7 +136,7 @@ function getDataTask() {
     $(".task-id").val(lastItem);
     $(".task-id-hidden").val(lastItem);
     $.ajax({
-        url: "/api/task/info/" + lastItem,
+        url: "/api/v1/tasks/" + lastItem,
         method: "get",
         dataType: "json",
         headers: {
@@ -196,7 +166,7 @@ function getDataTask() {
             $.each(dataTask.user, function (indexInArray, valueOfElement) {
                 controlSelect.addItem(valueOfElement.user_id);
             });
-            if(localStorage.getItem("role") != 1){
+            if(localStorage.getItem("role") != 0){
                 $("#task-name").prop('disabled', true);
                 controlSelectCategory.disable();
                 controlSelectLevel.disable();
@@ -204,7 +174,7 @@ function getDataTask() {
                 controlSelect.disable();
                 $("#estimate-date").prop('disabled', true);
             }
-            if(localStorage.getItem("role") == 1){
+            if(localStorage.getItem("role") == 0){
                 theEditor.setData(dataTask.describes);
             }else{
                 $(".form-editor").css("display", "none");
@@ -274,18 +244,17 @@ $(document).ready(function () {
     LoadUserNormal();
     LoadCategory();
     LoadLevel();
-    LoadPriority();
     getDataTask();
 
 
-    if(localStorage.getItem("role") == 1){
+    if(localStorage.getItem("role") == 0){
         $(".list-btn-update-task").append('<button class="btn btn-blue btn-update-task">Save Task  <span class="flaticon-save"></span></button><button class="btn btn-blue btn-delete-task">Delete Task</button>');
     }
 
     $(document).on("click", ".btn-delete-task", function () {
         var idDeleteTask = $(".task-id-hidden").val();
         $.ajax({
-            url: "/api/task/delete/" + idDeleteTask,
+            url: "/api/v1/task/" + idDeleteTask,
             method: "delete",
             dataType: "json",
             headers: {
@@ -327,9 +296,9 @@ $(document).ready(function () {
         e.preventDefault();
         var formData = new FormData($(".form-update-task")[0]);
         formData.append("describes", theEditor.getData());
-
+        formData.append('_method', 'PATCH');
         $.ajax({
-            url: "/api/task/update",
+            url: "/api/v1/tasks/"+$(".task-id-hidden").val(),
             method: "post",
             data: formData,
             contentType: false,
@@ -448,7 +417,7 @@ var editor = CKEDITOR.ClassicEditor.create(document.querySelector("#editor"), {
         },
     },
     ckfinder: {
-        uploadUrl: "/api/images/upload",
+        uploadUrl: "/api/v1/images/upload",
     },
     // https://ckeditor.com/docs/ckeditor5/latest/features/headings.html#configuration
     heading: {
@@ -638,7 +607,7 @@ var editor = CKEDITOR.ClassicEditor.create(document.querySelector("#editor"), {
                                     const xhr = new XMLHttpRequest();
                                     xhr.open(
                                         "POST",
-                                        "/api/images/upload",
+                                        "/api/v1/images/upload",
                                         true
                                     );
                                     xhr.setRequestHeader(

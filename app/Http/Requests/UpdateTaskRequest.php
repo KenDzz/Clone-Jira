@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\JsonErrorResponseTrait;
+use App\Enums\PriorityType;
+use App\Traits\JsonResponseTrait;
+use BenSampo\Enum\Rules\EnumValue;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Response;
@@ -12,7 +14,7 @@ use Illuminate\Contracts\Validation\Validator;
 class UpdateTaskRequest extends FormRequest
 {
 
-    use JsonErrorResponseTrait;
+    use JsonResponseTrait;
 
 
     private $NEEDS_AUTHORIZATION = true;
@@ -35,13 +37,13 @@ class UpdateTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'category_id' => ['required', 'numeric'],
-            'level_id' => ['required', 'numeric'],
+            'category_id' => ['required', 'numeric' , 'exists:App\Models\Category,id'],
+            'level_id' => ['required', 'numeric' , 'exists:App\Models\Level,id'],
             'name' => ['required', 'string'],
             'describes' => ['required', 'string'],
             'id' => ['required', 'numeric'],
-            'priority_id' => ['required', 'numeric'],
-            'users.*' => ['required', 'numeric'],
+            'priority' => [new EnumValue(PriorityType::class)],
+            'users.*' => ['required', 'numeric', 'exists:App\Models\User,id'],
             'datetimes' => ['required', 'string'],
         ];
     }
@@ -64,13 +66,15 @@ class UpdateTaskRequest extends FormRequest
             'priority_id.numeric' => __('task.update.priority_id.required'),
             'users.numeric' => __('task.update.users.numeric'),
             'datetimes.numeric' => __('task.update.datetimes.numeric'),
-
+            'category_id.exists' => __('task.create.category_id.exists'),
+            'level_id.exists' => __('task.create.level_id.exists'),
+            'users.exists' => __('task.create.users.exists'),
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         $errors = (new ValidationException($validator))->errors();
-        throw new HttpResponseException($this->result($errors, Response::HTTP_UNPROCESSABLE_ENTITY, false));
+        throw new HttpResponseException($this->setHTTPStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR)->respondWithError($errors));
     }
 }

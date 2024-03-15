@@ -10,4 +10,6 @@ interface UserProjectRepositoryInterface  extends BaseRepositoryInterface
     public function checkUserExitsInProject($userId, $projectId);
 
     public function GetListProjectByUser($userId);
+
+    public function DeleteListByProjectId($projectId);
 }

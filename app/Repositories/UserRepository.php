@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Enums\UserType;
 use App\Http\Controllers\MailController;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -23,6 +24,6 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     }
 
     public function GetUserNormal(){
-        return $this->model->where('permission_id','!=', 1)->get();
+        return $this->model->where('permission','!=', (string)UserType::Administrator)->get();
     }
 }

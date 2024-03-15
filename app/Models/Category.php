@@ -9,15 +9,14 @@ class Category extends Model
 {
     use HasFactory;
 
-    public $table = "categorys";
+    public $table = "categories";
 
 
     protected $fillable = [
         'name'
     ];
 
-    public $timestamps = false;
-    public function Task()
+    public function tasks()
     {
         return $this->hasMany(Task::class, 'category_id');
     }

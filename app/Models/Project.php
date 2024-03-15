@@ -12,15 +12,15 @@ class Project extends Model
     protected $fillable = [
         'name',
         'describes',
-        'is_exist'
+        'status'
     ];
 
-    public function UserProject()
+    public function userProjects()
     {
         return $this->hasMany(UserProject::class, 'project_id');
     }
 
-    public function Task()
+    public function tasks()
     {
         return $this->hasMany(Task::class, 'project_id');
     }
