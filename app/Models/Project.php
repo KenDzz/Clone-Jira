@@ -13,7 +13,8 @@ class Project extends Model
     protected $fillable = [
         'name',
         'describes',
-        'status'
+        'status',
+        'is_exist'
     ];
 
     public function userProjects()

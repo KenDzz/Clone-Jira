@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Repositories\CategoryRepository;
+use App\Repositories\CommentRepository;
 use App\Repositories\Interfaces\CategoryRepositoryInterface;
+use App\Repositories\Interfaces\CommentRepositoryInterface;
 use App\Repositories\Interfaces\LevelRepositoryInterface;
 use App\Repositories\Interfaces\PriorityRepositoryInterface;
 use App\Repositories\Interfaces\ProjectRepositoryInterface;
@@ -47,6 +49,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->singleton(CategoryRepositoryInterface::class,CategoryRepository::class);
         $this->app->singleton(LevelRepositoryInterface::class,LevelRepository::class);
         $this->app->singleton(PriorityRepositoryInterface::class,PriorityRepository::class);
+        $this->app->singleton(CommentRepositoryInterface::class,CommentRepository::class);
 
     }
 }

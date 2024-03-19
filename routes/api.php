@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\Auth\AuthController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\ImageController;
 use App\Http\Controllers\API\LevelController;
 use App\Http\Controllers\API\ProjectController;
@@ -68,5 +69,8 @@ Route::group([
     Route::resource('levels', LevelController::class)->only([
         'index'
     ]);
+
+    //Comments
+    Route::resource('comments', CommentController::class);
 });
 

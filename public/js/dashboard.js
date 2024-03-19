@@ -113,7 +113,7 @@ function LoadListProject() {
                         item.describes +
                         '</p><div class="member mt-2"><p class="card-text">Project creation date:</p>'+
                         date.toLocaleString()
-                        +'</div><div class="row list-btn-action"><div class="col-sm-6"><a href="task/'+item.id+'" class="btn btn-primary w-100">Go Tasks</a></div>'+listBtn+'</div></div></div></div>'
+                        +'</div><div class="row list-btn-action"><div class="col-sm-6"><a href="task/'+item.id+'" class="btn btn-primary w-100">Go Tasks</a></div><div class="col-sm-6"><a href="#" class="btn btn-primary w-100 btn-delete-project">Comment</a></div>'+listBtn+'</div></div></div></div>'
                 );
             });
         })

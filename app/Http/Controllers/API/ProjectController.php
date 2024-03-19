@@ -10,6 +10,7 @@ use App\Http\Requests\DeleteProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectCollection;
 use App\Http\Resources\ProjectResource;
+use App\Models\Project;
 use App\Repositories\Interfaces\ProjectRepositoryInterface;
 use App\Repositories\Interfaces\UserProjectRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
@@ -31,6 +32,8 @@ class ProjectController extends Controller
 
     private $checkAdmin;
 
+    private $userInfo;
+
     public function __construct(ProjectRepositoryInterface $projectRepositoryInterface, UserProjectRepositoryInterface $userProjectRepositoryInterface, UserRepositoryInterface $userRepositoryInterface, EmailService $emailService)
     {
         $this->projectRepository = $projectRepositoryInterface;
@@ -40,6 +43,7 @@ class ProjectController extends Controller
         $this->middleware('auth:api', ['except' => []]);
         $this->middleware('isAdmin:api', ['except' => ['index', 'show']]);
         $this->checkAdmin = UserType::Administrator();
+        $this->userInfo = auth()->user();
     }
 
     /**
@@ -64,11 +68,11 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        if($this->checkAdmin->is((int)auth()->user()->permission)){
-            return $this->result(ProjectResource::collection($this->projectRepository->getAll()), true);
+        if($this->checkAdmin->is((int)$this->userInfo->permission)){
+            return $this->result(ProjectResource::collection($this->projectRepository->getAllIsExist()), true);
         }else{
-            $listProject = $this->userProjectRepository->getListProjectByUser(auth()->user()->id);
-            return $this->result($this->projectRepository->getALLMultiProject($listProject), true);
+            $listProject = $this->userProjectRepository->getProjectsByUser($this->userInfo->id);
+            return $this->result($this->projectRepository->getAllByIds($listProject), true);
         }
     }
 
@@ -122,8 +126,7 @@ class ProjectController extends Controller
             'describes',
             'status'
         ]);
-
-
+        $filteredDataProject['is_exist'] = true;
         $resultCreateProject = $this->projectRepository->createProject($filteredDataProject);
         $resultCreateUserProject = $this->userProjectRepository->createUserProject($resultCreateProject->id, $request['users']);
         foreach ($resultCreateUserProject as $key => $value) {
@@ -163,11 +166,10 @@ class ProjectController extends Controller
      */
     public function destroy(int $id)
     {
-
         if (!is_numeric($id)) {
             return $this->respondNotTheRightParameters( __("project.delete.id.numeric"));
         }
-        if(!$this->userProjectRepository->deleteListByProjectId($id) || !$this->projectRepository->delete($id)){
+        if(!$this->projectRepository->deleteProject($id)){
             return $this->respondInvalidQuery(__("project.delete.id.fail"));
         }
         return $this->respondObjectDeleted($id);
@@ -207,8 +209,8 @@ class ProjectController extends Controller
         if (!is_numeric($id)) {
             return $this->respondNotTheRightParameters(__("project.delete.id.numeric"));
         }
-        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $id);
-        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject($this->userInfo->id, $id);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)$this->userInfo->permission)) {
             return $this->respondUnauthorized(__("project.get.auth.exits"));
         }
         return $this->result(new ProjectResource($this->projectRepository->find($id)), true);

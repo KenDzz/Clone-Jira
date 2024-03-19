@@ -19,7 +19,8 @@ class Task extends Model
         'priority',
         'start_time',
         'estimate_time',
-        'comment_id'
+        'comment_id',
+        'is_exist'
     ];
 
     public function project()

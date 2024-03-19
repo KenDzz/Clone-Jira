@@ -22,7 +22,7 @@ class TaskResource extends JsonResource
             'level' => $this->Level,
             'name' => $this->name,
             'describes' => Purify::clean($this->describes),
-            'project' => $this->project,
+            'project' => $this->projects,
             'priority' => $this->priority,
             'user' => UserTaskResource::collection($this->userTasks),
             'start_time' => Carbon::parse($this->start_time)->timestamp,

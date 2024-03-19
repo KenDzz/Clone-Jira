@@ -39,4 +39,8 @@ interface BaseRepositoryInterface
      */
     public function delete($id);
 
+    public function with($relations);
+
+    public function getWith();
+
 }

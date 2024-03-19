@@ -155,6 +155,7 @@ return [
     */
 
 
+
     'providers' => [
 
         /*
@@ -182,7 +183,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-
+        Barryvdh\Debugbar\ServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -195,6 +196,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //App\Providers\TelescopeServiceProvider::class,
         App\Providers\RepositoryServiceProvider::class,
 
     ],
@@ -213,5 +215,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
+
+
+    'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 
 ];

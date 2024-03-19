@@ -34,6 +34,8 @@ class TaskController extends Controller
     private $MIN_LEVEL = 1;
     private $checkAdmin;
 
+    private $userInfo;
+
 
     public function __construct(TaskRepositoryInterface $taskRepositoryInterface, UserTaskRepositoryInterface $userTaskRepositoryInterface, UserProjectRepositoryInterface $userProjectRepositoryInterface, EmailService $emailService)
     {
@@ -44,6 +46,7 @@ class TaskController extends Controller
         $this->middleware('auth:api', ['except' => ['']]);
         $this->middleware('isAdmin:api', ['except' => ['show', 'GetTaskInfo']]);
         $this->checkAdmin = UserType::Administrator();
+        $this->userInfo = auth()->user();
 
     }
 
@@ -85,11 +88,11 @@ class TaskController extends Controller
         if(!$dataTask){
             return $this->respondInvalidQuery(__("task.get.id.data.null"));
         }
-        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $dataTask->project->id);
-        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject($this->userInfo->id, $dataTask->project->id);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)$this->userInfo->permission)) {
             return $this->respondUnauthorized( __("project.get.auth.exits"));
         }
-        return $this->result(new TaskResource($this->taskRepository->find($id)), true);
+        return $this->result(new TaskResource($dataTask), true);
     }
 
     /**
@@ -125,8 +128,8 @@ class TaskController extends Controller
         if (!is_numeric($id)) {
             return $this->respondInvalidParameters(__("task.get.id.numeric"));
         }
-        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject(auth()->user()->id, $id);
-        if (!$checkUserExistProject && !$this->checkAdmin->is((int)auth()->user()->permission)) {
+        $checkUserExistProject = $this->userProjectRepository->checkUserExitsInProject($this->userInfo->id, $id);
+        if (!$checkUserExistProject && !$this->checkAdmin->is((int)$this->userInfo->permission)) {
             return $this->respondUnauthorized(__("project.get.auth.exits"));
         }
         return $this->result(TaskResource::collection($this->taskRepository->getAllTask($id)), true);
@@ -207,7 +210,7 @@ class TaskController extends Controller
             "project_id",
             "priority",
         ]);
-
+        $filteredDataTask['is_exist'] = true;
         $dataFormatDate = explode('-', $request->datetimes);
         $filteredDataTask['start_time'] = Carbon::parse($dataFormatDate[0]);
         $filteredDataTask['estimate_time'] = Carbon::parse($dataFormatDate[1]);

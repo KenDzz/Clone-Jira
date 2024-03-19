@@ -58,14 +58,14 @@ class UserProjectRepository extends BaseRepository  implements UserProjectReposi
 
 
     public function checkUserExitsInProject($userId, $projectId){
-        return $this->model->where('project_id', $projectId)->where('user_id', $userId)->first();
+        return $this->model->where('project_id', $projectId)->where('user_id', $userId)->exists();
     }
 
-    public function getListProjectByUser($userId){
+    public function getProjectsByUser($userId){
         return $this->model->where('user_id', $userId)->pluck('project_id')->toArray();
     }
 
-    public function deleteListByProjectId($projectId){
+    public function deleteByProjectId($projectId){
         return $this->model->where('project_id', $projectId)->delete();
     }
 

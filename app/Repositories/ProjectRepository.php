@@ -13,13 +13,30 @@ class ProjectRepository extends BaseRepository implements ProjectRepositoryInter
     }
 
 
-    public function getALLMultiProject($dataProject){
-        return $this->model->whereIn('id', $dataProject)->get();
+    public function getAllByIds($ids){
+        $isExist = true;
+        return $this->model->with("userProjects")->whereHas("userProjects",function($q) use($isExist,$ids){
+            $q->whereIn('id', $ids);
+            $q->where("is_exist",$isExist);
+        })->get();
     }
 
 
     public function createProject($dataProject) {
         return $this->model->create($dataProject);
+    }
+
+    public function deleteProject($id){
+        $projectInfo['is_exist'] = false;
+        return $this->update($id, $projectInfo);
+    }
+
+
+    public function getAllIsExist(){
+        $isExist = true;
+        return $this->model->with("userProjects")->whereHas("userProjects",function($q) use($isExist){
+            $q->where("is_exist",$isExist);
+        })->get();
     }
 
 }

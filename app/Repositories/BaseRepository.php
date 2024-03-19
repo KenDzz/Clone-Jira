@@ -25,6 +25,30 @@ abstract class BaseRepository implements BaseRepositoryInterface
         );
     }
 
+    /**
+     * Eager load specified relationships
+     *
+     * @param array|string $relations
+     * @return $this
+     */
+    public function with($relations)
+    {
+        $this->model = $this->model->with($relations);
+
+        return $this;
+    }
+
+
+    /**
+     * Get all records with eager loaded relationships
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getWith()
+    {
+        return $this->model->get();
+    }
+
     public function getAll()
     {
         return $this->model->all();
